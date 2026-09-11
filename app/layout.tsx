@@ -20,7 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      {/* Grammarly can inject body attributes before React hydrates. */}
+      <body suppressHydrationWarning>
         <a className="sr-only focus:not-sr-only" href="#main">
           Skip to content
         </a>
