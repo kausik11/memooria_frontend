@@ -1,0 +1,38 @@
+"use client";
+import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { api } from "@/services/api";
+import { useResource } from "@/hooks/useResource";
+import Fields, { visible, Upload, type Field, type Value } from "./Fields";
+export default function RequestForm({ creator, service }: { creator?: string; service?: string }) {
+  const { data: services } = useResource<{ title: string }[]>("/services");
+  const { data: events } = useResource<{ title: string }[]>("/events");
+  const { data: dynamic } = useResource<{ fields: Field[] }>(`/forms?context=${creator ? "DIRECT_BOOKING" : "REQUIREMENT_FORM"}&category=${encodeURIComponent(service || "")}`);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  useEffect(() => { if (creator) api<{ dates: string[] }>("/availability/"+creator).then(r => setAvailableDates(r.dates.filter(d => d >= new Date().toISOString().slice(0, 10)))).catch(() => {}); }, [creator]);
+  const [values, setValues] = useState<Record<string, Value>>({ guestCount: 1, services: service ? [service] : [], budgetMin: 0 });
+  const [answers, setAnswers] = useState<Record<string, Value>>({});
+  const [attachments, setAttachments] = useState<string[]>([]);
+  const [step, setStep] = useState(0), [error, setError] = useState(""), [busy, setBusy] = useState(false), [result, setResult] = useState("");
+  const draftKey = creator ? "booking-"+creator : "requirement";
+  const [draftMessage, setDraftMessage] = useState("");
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  useEffect(() => { api("/auth/me").then(() => setSignedIn(true)).catch(() => setSignedIn(false)); }, []);
+  useEffect(() => { if (signedIn) api<{ values: Record<string, Value>; answers: Record<string, Value>; attachments: string[]; step: number } | null>("/drafts/"+draftKey).then(d => { if (d) { setValues(d.values); setAnswers(d.answers); setAttachments(d.attachments); setStep(d.step); setDraftMessage("Your saved draft has been restored."); } }).catch(() => {}); }, [signedIn, draftKey]);
+  async function saveDraft(nextStep = step) { await api("/drafts/"+draftKey, { method: "PUT", body: JSON.stringify({ kind: creator ? "booking" : "requirement", values: { ...values, ...(creator && { creator, service }) }, answers, attachments, step: nextStep }) }); setDraftMessage("Progress saved. You can return to this request later."); }
+  const fields: Field[] = [
+    { id: "title", label: "Give your occasion a title", type: "text", minLength: 3 },
+    { id: "event", label: "What are you planning?", type: "select", options: events?.map(e => e.title) || [] },
+    ...(!creator ? [{ id: "services", label: "Which services do you need? Hold Ctrl/Cmd to select more than one.", type: "multiselect", options: services?.map(s => s.title) || [] }] : []),
+    { id: "date", label: "Event date", type: creator && availableDates.length ? "select" : "date", options: availableDates }, { id: "startTime", label: "Start time (local event time)", type: "time" }, { id: "endTime", label: "End time (same day)", type: "time" }, { id: "city", label: "City", type: "text" }, { id: "venue", label: "Venue / exact address (kept private before confirmation)", type: "textarea", optional: true }, { id: "guestCount", label: "Number of guests", type: "number", min: 1, max: 100000 },
+    ...(creator ? [{ id: "amount", label: "Proposed budget (INR)", type: "price", min: 1, max: 10000000 }, { id: "packageName", label: "Preferred package", type: "text", optional: true }] : [{ id: "budgetMin", label: "Minimum budget (INR)", type: "price", min: 0 }, { id: "budgetMax", label: "Maximum budget (INR)", type: "price", min: 1 }, { id: "deadline", label: "Proposals accepted until", type: "date" }, { id: "description", label: "Tell creators exactly what you need", type: "textarea", minLength: 20, placeholder: "Share your style, expected deliverables, reference ideas, team needs and delivery expectations." }]),
+    { id: "instructions", label: "Anything else the creator should know?", type: "textarea", optional: true },
+  ];
+  const all = [...fields, ...(dynamic?.fields || []).filter(f => visible(f, answers)).map(f => ({ ...f, when: undefined, id: `custom_${f.id}` }))];
+  const q = all[step];
+  async function submit(e: FormEvent) { e.preventDefault(); setError(""); if (q) { setBusy(true); try { await saveDraft(step + 1); setStep(s => s + 1); } catch (e) { setError(e instanceof Error ? e.message : "Unable to save draft."); } finally { setBusy(false); } return; } setBusy(true); try { const r = await api<{ _id: string }>(creator ? "/bookings" : "/requirements", { method: "POST", body: JSON.stringify({ ...values, ...(creator && { creator, service }), attachments, answers }) }); await api("/drafts/"+draftKey, { method: "DELETE" }).catch(() => {}); setResult(r._id); } catch (e) { setError(e instanceof Error ? e.message : "Unable to submit."); } finally { setBusy(false); } }
+  if (result) return <div role="status"><h2 className="display text-3xl">Sent for review.</h2><p className="muted">Memooria will review your request before a creator receives it.</p><Link className="btn" href={`/customer/${creator ? "bookings" : "requirements"}/${result}`}>View your request</Link></div>;
+  if (signedIn === null) return <p>Checking your account…</p>;
+  if (!signedIn) return <div><p className="muted">Sign in to save your request and keep your conversations in one place.</p><Link href={`/login?returnTo=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname + window.location.search : "/post-requirement")}`} className="btn">Log in to continue</Link><Link href="/register" className="block mt-4 underline">Create an account</Link></div>;
+  return <form className="space-y-6" onSubmit={submit}><p className="eyebrow">{creator ? "REQUEST A BOOKING" : "POST YOUR REQUIREMENT"} · {step + 1} / {all.length + 1}</p><progress className="w-full accent-purple-700" value={step + 1} max={all.length + 1} />{q ? <Fields fields={[q]} values={{ ...values, ...Object.fromEntries(Object.entries(answers).map(([k, v]) => [`custom_${k}`, v])) }} onChange={(id, v) => id.startsWith("custom_") ? setAnswers(a => ({ ...a, [id.slice(7)]: v })) : setValues(a => ({ ...a, [id]: v }))} /> : <><h2 className="display text-3xl">Review & submit</h2><dl className="space-y-3">{fields.map((f, i) => <div key={f.id}><dt className="text-xs font-semibold">{f.label} <button className="text-brand underline" type="button" onClick={() => setStep(i)}>Edit</button></dt><dd className="muted text-sm">{Array.isArray(values[f.id]) ? (values[f.id] as string[]).join(", ") : String(values[f.id] ?? "Not provided")}</dd></div>)}</dl><label className="field">Reference attachments (optional)<Upload purpose="reference" values={attachments} onChange={setAttachments} /></label><p className="text-xs muted">This request goes to Memooria for approval. Your private contact details remain hidden until the configured booking stage.</p></>}{error && <p className="error-box" role="alert">{error}</p>}<p className="muted text-xs" role="status">{draftMessage}</p><button type="button" className="text-brand underline text-sm" disabled={busy} onClick={async () => { setBusy(true); try { await saveDraft(); } catch (e) { setError(e instanceof Error ? e.message : "Unable to save."); } finally { setBusy(false); } }}>Save draft</button><div className="flex gap-3"><button className="btn btn-outline" type="button" disabled={!step || busy} onClick={() => setStep(s => s - 1)}>Back</button><button className="btn" disabled={busy}>{busy ? "Submitting…" : q ? "Continue" : "Submit for review"}</button></div></form>;
+}

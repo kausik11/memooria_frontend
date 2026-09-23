@@ -7,7 +7,7 @@ import {
   FiMessageCircle,
 } from "react-icons/fi";
 import Hero from "@/components/Hero";
-import SearchBar from "@/components/SearchBar";
+import EventDiscovery from "@/components/marketplace/EventDiscovery";
 import CreatorCard from "@/components/CreatorCard";
 import InquiryForm from "@/components/InquiryForm";
 import Counters from "@/components/Counters";
@@ -20,15 +20,17 @@ export default async function Home() {
     api<CreatorResult>("/creators?featured=true&limit=4"),
     api<Content>("/content"),
   ]);
+  if (!result.items.length) Object.assign(result, await api<CreatorResult>("/creators?limit=4"));
   return (
     <>
       <Hero slides={content.slides} />
       <div className="wrap relative -mt-5 md:-mt-9">
-        <SearchBar services={services} />
+        <EventDiscovery />
         <p className="muted mt-4 text-center text-[10px]">
           A little planning. A perfect match. A lifetime of memories.
         </p>
       </div>
+      <div className="wrap flex flex-wrap gap-4 pt-8"><Link className="btn" href="/post-requirement">Post your requirement</Link><Link className="btn btn-outline" href="/how-it-works">How Memooria works</Link></div>
       <section id="services" className="section wrap !pb-10">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
@@ -121,7 +123,7 @@ export default async function Home() {
             {
               icon: FiMessageCircle,
               title: "Connect, without the complications",
-              copy: "Share your plans directly with your chosen creator.",
+              copy: "Send a request, get approval, and plan together inside Memooria.",
             },
             {
               icon: FiHeart,

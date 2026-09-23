@@ -13,6 +13,7 @@ export type Review = {
   comment: string;
 };
 export type Creator = {
+  verified?: boolean;
   _id: string;
   businessName: string;
   ownerName: string;

@@ -1,0 +1,2 @@
+import RequestForm from "@/components/marketplace/RequestForm";
+export default function Page(){return <div className="wrap section"><div className="mx-auto max-w-2xl rounded-xl border bg-white p-8"><h1 className="display text-4xl">Tell us what you need.</h1><RequestForm /></div></div>;}

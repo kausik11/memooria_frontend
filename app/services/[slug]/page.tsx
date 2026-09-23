@@ -1,0 +1,1 @@
+import {api} from "@/services/api"; import {redirect,notFound} from "next/navigation"; export default async function Page({params}:{params:Promise<{slug:string}>}){ const {slug}=await params; const rows=await api<{slug:string;title:string}[]>("/services"); const item=rows.find(x=>x.slug===slug); if(!item)notFound(); redirect("/explore?category="+encodeURIComponent(item.title));}

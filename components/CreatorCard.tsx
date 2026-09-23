@@ -50,6 +50,7 @@ export default function CreatorCard({ creator: c }: { creator: Creator }) {
       <div className="mt-4 flex items-start justify-between gap-2">
         <Link href={`/creator/${c.slug}`} className="font-semibold text-[15px]">
           {c.businessName}
+          {c.verified && <span className="ml-2 text-brand text-xs" title="Verified by Memooria">✓ Verified</span>}
         </Link>
         <span className="flex shrink-0 items-center gap-1 text-xs">
           <span className="text-[#d59d42]">★</span>{" "}

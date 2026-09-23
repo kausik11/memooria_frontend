@@ -19,9 +19,9 @@ export function Logo() {
 }
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
   useEffect(() => {
-    api<{ name: string }>("/auth/me")
+    api<{ name: string; role: string }>("/auth/me")
       .then(setUser)
       .catch(() => {});
   }, []);
@@ -32,7 +32,8 @@ export default function Header() {
         <nav className="hidden items-center gap-8 text-[12px] font-semibold md:flex">
           <Link href="/explore">Explore creators</Link>
           <Link href="/#services">Our services</Link>
-          <Link href="/#how-it-works">How it works</Link>
+          <Link href="/post-requirement">Post a requirement</Link>
+          <Link href={user?.role === "creator" ? "/creator/dashboard" : "/customer/dashboard"}>Dashboard</Link>
         </nav>
         <div className="hidden items-center gap-6 md:flex">
           {user ? (
@@ -71,7 +72,8 @@ export default function Header() {
           <Link href="/explore">Explore creators</Link>
           <Link href="/#services">Our services</Link>
           <Link href="/join">Become a creator</Link>
-          <Link href="/login">Your account</Link>
+          <Link href="/post-requirement">Post a requirement</Link>
+          <Link href={user?.role === "creator" ? "/creator/dashboard" : "/customer/dashboard"}>Your dashboard</Link>
         </nav>
       )}
     </header>

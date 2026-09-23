@@ -1,0 +1,2 @@
+import RequestForm from "@/components/marketplace/RequestForm";
+export default async function Page({searchParams}:{searchParams:Promise<{creator?:string;service?:string}>}){const q=await searchParams; return <div className="wrap section"><div className="mx-auto max-w-2xl rounded-xl border bg-white p-8"><RequestForm creator={q.creator} service={q.service} /></div></div>;}

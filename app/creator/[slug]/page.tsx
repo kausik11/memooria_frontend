@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { FiMapPin, FiCheck, FiArrowUpRight } from "react-icons/fi";
 import { api, ApiError, money } from "@/services/api";
 import type { Creator } from "@/services/types";
-import InquiryForm from "@/components/InquiryForm";
+import AskQuestion from "@/components/marketplace/AskQuestion";
 import ReviewForm from "@/components/ReviewForm";
 import Gallery from "@/components/Gallery";
 import ShareProfile from "@/components/ShareProfile";
@@ -217,11 +217,8 @@ export default async function CreatorPage({
               Share your vision with {c.businessName}. Choose an available date
               below.
             </p>
-            <InquiryForm
-              creator={c._id}
-              service={c.category}
-              dates={c.availability}
-            />
+            <Link className="btn w-full" href={`/request-booking?creator=${c._id}&service=${encodeURIComponent(c.category)}`}>Request booking</Link>
+            <AskQuestion creator={c._id} />
           </section>
         </aside>
       </div>

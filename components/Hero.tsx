@@ -114,12 +114,12 @@ export default function Hero({
             >
               <FiArrowRight />
             </button>
-            <button
+            {/* <button
               className="text-xs underline"
               onClick={() => setPaused(!paused)}
             >
               {paused ? "Play" : "Pause"}
-            </button>
+            </button> */}
           </>
         )}
       </div>
