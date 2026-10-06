@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -28,6 +29,7 @@ export default function RootLayout({
         <Header />
         <main id="main">{children}</main>
         <Footer />
+        <WhatsAppButton />
       </body>
     </html>
   );
