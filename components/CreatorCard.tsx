@@ -48,7 +48,10 @@ export default function CreatorCard({ creator: c }: { creator: Creator }) {
         </span>
       </div>
       <div className="mt-4 flex items-start justify-between gap-2">
-        <Link href={`/creator/${c.slug}`} className="font-semibold text-[15px]">
+        <Link
+          href={`/creator/${c.slug}`}
+          className="font-semibold text-[15px] transition-colors hover:text-brand"
+        >
           {c.businessName}
           {c.verified && <span className="ml-2 text-brand text-xs" title="Verified by Memooria">✓ Verified</span>}
         </Link>
@@ -80,7 +83,7 @@ export default function CreatorCard({ creator: c }: { creator: Creator }) {
         <Link
           aria-label={`Explore ${c.businessName}`}
           href={`/creator/${c.slug}`}
-          className="rounded-full border border-stone-200 p-1.5"
+          className="rounded-full border border-stone-200 p-1.5 transition-colors hover:border-brand hover:bg-purple-50 hover:text-brand"
         >
           <FiArrowUpRight />
         </Link>

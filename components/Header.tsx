@@ -30,9 +30,15 @@ export default function Header() {
       <div className="wrap flex h-[82px] items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-8 text-[12px] font-semibold md:flex">
-          <Link href="/">Home</Link>
-          <Link href="/explore">Explore creators</Link>
-          <Link href="/#services">Our services</Link>
+          {user?.role === "creator" ? (
+            <Link href="/creator/opportunities">Requirements</Link>
+          ) : (
+            <>
+              <Link href="/">Home</Link>
+              <Link href="/explore">Explore creators</Link>
+              <Link href="/#services">Our services</Link>
+            </>
+          )}
           <Link href="/post-requirement">Post a requirement</Link>
           <Link href={user?.role === "creator" ? "/creator/dashboard" : "/customer/dashboard"}>Dashboard</Link>
         </nav>
@@ -70,9 +76,15 @@ export default function Header() {
           className="flex flex-col gap-5 border-t border-stone-200 px-6 py-6 md:hidden"
           onClick={() => setOpen(false)}
         >
-          <Link href="/">Home</Link>
-          <Link href="/explore">Explore creators</Link>
-          <Link href="/#services">Our services</Link>
+          {user?.role === "creator" ? (
+            <Link href="/creator/opportunities">Requirements</Link>
+          ) : (
+            <>
+              <Link href="/">Home</Link>
+              <Link href="/explore">Explore creators</Link>
+              <Link href="/#services">Our services</Link>
+            </>
+          )}
           <Link href="/join">Become a creator</Link>
           <Link href="/post-requirement">Post a requirement</Link>
           <Link href={user?.role === "creator" ? "/creator/dashboard" : "/customer/dashboard"}>Your dashboard</Link>

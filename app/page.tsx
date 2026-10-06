@@ -7,6 +7,7 @@ import {
   FiMessageCircle,
 } from "react-icons/fi";
 import Hero from "@/components/Hero";
+import ScrollReveal from "@/components/ScrollReveal";
 import EventDiscovery from "@/components/marketplace/EventDiscovery";
 import CreatorCard from "@/components/CreatorCard";
 import InquiryForm from "@/components/InquiryForm";
@@ -31,7 +32,7 @@ export default async function Home() {
         </p>
       </div>
       <div className="wrap flex flex-wrap gap-4 pt-8"><Link className="btn" href="/post-requirement">Post your requirement</Link><Link className="btn btn-outline" href="/how-it-works">How Memooria works</Link></div>
-      <section id="services" className="section wrap !pb-10">
+      <ScrollReveal id="services" className="section wrap !pb-10">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="eyebrow">EVERY DETAIL, BEAUTIFULLY COVERED</p>
@@ -81,8 +82,8 @@ export default async function Home() {
               </Link>
             ))}
         </div>
-      </section>
-      <section className="section wrap !pt-10">
+      </ScrollReveal>
+      <ScrollReveal className="section wrap !pt-10">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="eyebrow">EXCEPTIONAL TALENT. PERSONAL CONNECTIONS.</p>
@@ -111,8 +112,8 @@ export default async function Home() {
             Our creator collection is growing. Check back soon.
           </p>
         )}
-      </section>
-      <section id="how-it-works" className="bg-[#f1ecf7] py-7">
+      </ScrollReveal>
+      <ScrollReveal id="how-it-works" className="bg-[#f1ecf7] py-7">
         <div className="wrap grid gap-7 md:grid-cols-3">
           {[
             {
@@ -140,8 +141,8 @@ export default async function Home() {
             </div>
           ))}
         </div>
-      </section>
-      <section id="gallery" className="section wrap">
+      </ScrollReveal>
+      <ScrollReveal id="gallery" className="section wrap">
         <div className="mb-9 text-center">
           <p className="eyebrow">A LITTLE INSPIRATION FOR YOUR BIG DAY</p>
           <h2 className="display section-title mb-3">
@@ -175,8 +176,8 @@ export default async function Home() {
               </Link>
             ))}
         </div>
-      </section>
-      <section id="stories" className="section bg-white">
+      </ScrollReveal>
+      <ScrollReveal id="stories" className="section bg-white">
         <div className="wrap">
           <div className="mb-9 text-center">
             <p className="eyebrow">FROM THEIR HEARTS, TO YOURS</p>
@@ -217,14 +218,14 @@ export default async function Home() {
             </p>
           )}
         </div>
-      </section>
-      <section className="section wrap">
+      </ScrollReveal>
+      <ScrollReveal className="section wrap">
         <p className="eyebrow mb-8 text-center">
           A GROWING COMMUNITY OF BEAUTIFUL POSSIBILITIES
         </p>
         <Counters stats={content.stats} />
-      </section>
-      <section id="contact" className="section !pt-4">
+      </ScrollReveal>
+      <ScrollReveal id="contact" className="section !pt-4">
         <div className="wrap grid overflow-hidden rounded-2xl border border-[#e9e0ef] bg-[#f6f0fa] md:grid-cols-2">
           <div className="p-8 md:p-14">
             <p className="eyebrow">LET’S MAKE SOMETHING BEAUTIFUL</p>
@@ -245,7 +246,7 @@ export default async function Home() {
             <InquiryForm />
           </div>
         </div>
-      </section>
+      </ScrollReveal>
     </>
   );
 }
