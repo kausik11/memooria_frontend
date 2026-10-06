@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useResource } from "@/hooks/useResource";
 import { api, money } from "@/services/api";
 import CreatorCard from "@/components/CreatorCard";
+import Loader from "@/components/Loader";
 import type { Creator } from "@/services/types";
 import BookingDetail from "./BookingDetail";
 import RequirementDetail from "./RequirementDetail";
@@ -11,7 +12,7 @@ import CreatorSettings from "./CreatorSettings";
 import Messages from "./Messages";
 import { Upload, FileLink } from "./Fields";
 export type Row = { _id: string; title?: string; name?: string; event?: string; city?: string; date?: string; status?: string; paymentStatus?: string; amount?: number; price?: number; message?: string; description?: string; reason?: string; explanation?: string; decision?: string; resolution?: string; services?: string[]; service?: string; requirement?: string; booking?: string; files?: string[]; link?: string; read?: boolean; matchingReason?: string };
-export function State({ loading, error, reload }: { loading: boolean; error: string; reload: () => void }) { return loading ? <p role="status" className="muted py-8">Loading your workspace…</p> : error ? <div role="alert" className="error-box">{error}<button onClick={reload} className="ml-4 underline">Retry</button><Link className="ml-4 underline" href="/login">Sign in</Link></div> : null; }
+export function State({ loading, error, reload }: { loading: boolean; error: string; reload: () => void }) { return loading ? <Loader label="Loading your workspace…" /> : error ? <div role="alert" className="error-box">{error}<button onClick={reload} className="ml-4 underline">Retry</button><Link className="ml-4 underline" href="/login">Sign in</Link></div> : null; }
 const creatorSections = ["dashboard", "analytics", "drafts", "opportunities", "proposals", "bookings", "calendar", "services", "packages", "portfolio", "locations", "messages", "deliveries", "reviews", "verification", "appeals", "payments", "support", "settings"];
 const customerSections = ["dashboard", "drafts", "bookings", "requirements", "proposals", "messages", "saved", "deliveries", "payments", "disputes", "profile", "support"];
 export default function Workspace({ role, section, id }: { role: "customer" | "creator"; section: string; id?: string }) {

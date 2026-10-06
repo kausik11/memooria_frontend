@@ -2,6 +2,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import Fields, { visible as fieldVisible } from "@/components/marketplace/Fields";
+import Loader from "@/components/Loader";
 import { api, ApiError } from "@/services/api";
 type Value = string | number | boolean | string[];
 type Question = { id: string; label: string; type: string; options?: string[]; when?: { id: string; value: string }; help?: string; optional?: boolean; minLength?: number; min?: number; max?: number };
@@ -85,7 +86,7 @@ export default function Onboarding({ kind }: { kind: "user" | "creator" }) {
     finally { setBusy(false); }
   }
   if (done) return <div className="space-y-5" role="status"><p className="eyebrow">{kind === "creator" ? "CREATOR APPLICATION" : "WELCOME TO MEMOORIA"}</p><h1 className="display text-4xl">{kind === "creator" ? "Your application is saved." : "You're all set."}</h1><p className="muted">{kind === "creator" ? `Status: ${done}. Our team reviews your details and work before your profile appears publicly.` : "Your interests have been saved. Find the right people for your next occasion."}</p><Link className="btn" href="/explore">Explore Memooria</Link></div>;
-  if (!ready || !config) return <div role="status">{error ? <><p className="error-box">{error}</p><button className="btn" onClick={() => { setError(""); setRetry(r => r + 1); }}>Try again</button></> : "Loading your questions…"}</div>;
+  if (!ready || !config) return error ? <div role="alert"><p className="error-box">{error}</p><button className="btn" onClick={() => { setError(""); setRetry(r => r + 1); }}>Try again</button></div> : <Loader label="Loading your questions…" />;
   return <div>
     <p className="eyebrow">{kind === "creator" ? "BECOME A CREATOR" : "CREATE YOUR ACCOUNT"}</p>
     <div className="mb-7"><div className="mb-2 flex justify-between text-xs muted"><span>{account ? "Your details" : "Create your login"}</span><span>Step {step + 1} of {total}</span></div><progress className="h-2 w-full accent-[#a65d43]" max={total} value={step + 1} /></div>
