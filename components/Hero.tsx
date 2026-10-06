@@ -91,11 +91,6 @@ export default function Hero({
         </div>
       </div>
       <div className="absolute bottom-7 right-8 flex items-center gap-4 text-white">
-        <span className="hidden text-[10px] tracking-widest sm:block">
-          {String(activeSlide ? activeIndex + 1 : 0).padStart(2, "0")} /{" "}
-          {String(validSlides.length).padStart(2, "0")} —{" "}
-          {activeSlide?.label || "YOUR NEXT CHAPTER"}
-        </span>
         {validSlides.length > 1 && (
           <>
             <button
