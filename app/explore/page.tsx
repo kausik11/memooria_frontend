@@ -1,5 +1,6 @@
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
+import FilterPanel from "@/components/FilterPanel";
 import CreatorCard from "@/components/CreatorCard";
 import { api } from "@/services/api";
 import type { CreatorResult, Service } from "@/services/types";
@@ -29,58 +30,7 @@ export default async function Explore({
       <p className="eyebrow">YOUR PEOPLE ARE HERE</p>
       <h1 className="display section-title">Find a creator. Make a memory.</h1>
       <SearchBar services={services} values={values} />
-      <form className="my-8 flex flex-wrap items-end gap-4" action="/explore">
-        {["location", "date", "category", "event", "categories"].map((k) => (
-          <input key={k} type="hidden" name={k} value={values[k] || ""} />
-        ))}
-        <label className="field">
-          Minimum price (₹)
-          <input
-            className="!w-36"
-            type="number"
-            name="minPrice"
-            min="0"
-            defaultValue={values.minPrice}
-            placeholder="Any"
-          />
-        </label>
-        <label className="field">
-          Maximum price (₹)
-          <input
-            className="!w-36"
-            type="number"
-            name="maxPrice"
-            min="0"
-            defaultValue={values.maxPrice}
-            placeholder="Any"
-          />
-        </label>
-        <label className="field">
-          Minimum rating
-          <select name="rating" defaultValue={values.rating || ""}>
-            <option value="">All ratings</option>
-            <option value="4">4+ stars</option>
-            <option value="4.5">4.5+ stars</option>
-          </select>
-        </label>
-        <label className="field">
-          Sort by
-          <select name="sort" defaultValue={values.sort || "recommended"}>
-            <option value="recommended">Recommended</option>
-            <option value="price">Price: low to high</option>
-            <option value="rating">Highest rated</option>
-          </select>
-        </label>
-        <label className="field">Start time<input type="time" name="startTime" defaultValue={values.startTime} /></label>
-        <label className="field">Language<input name="language" defaultValue={values.language} placeholder="Any language" /></label>
-        <label className="field">Minimum experience<input type="number" name="experience" min="0" max="80" defaultValue={values.experience} /></label>
-        <label className="field">Creator type<select name="businessType" defaultValue={values.businessType || ""}><option value="">Any type</option>{["INDIVIDUAL", "STUDIO", "AGENCY", "RENTAL_PROVIDER", "VENUE_PROVIDER"].map(t => <option key={t}>{t}</option>)}</select></label>
-        <label className="field">Travel<select name="travel" defaultValue={values.travel || ""}><option value="">Any</option><option value="true">Available to travel</option></select></label>
-        <button className="btn">Apply filters</button>
-        <Link href="/explore" className="py-3 text-xs underline">
-          Reset
-        </Link>
-      </form>
+      <FilterPanel values={values} />
       <p className="muted mb-7 text-xs">
         {result.total} creators{values.location ? ` in ${values.location}` : ""}
         {values.category ? ` · ${values.category}` : ""}
