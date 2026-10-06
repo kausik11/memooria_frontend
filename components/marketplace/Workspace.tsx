@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useResource } from "@/hooks/useResource";
 import { api, money } from "@/services/api";
@@ -15,7 +16,19 @@ export type Row = { _id: string; title?: string; name?: string; event?: string; 
 export function State({ loading, error, reload }: { loading: boolean; error: string; reload: () => void }) { return loading ? <Loader label="Loading your workspace…" /> : error ? <div role="alert" className="error-box">{error}<button onClick={reload} className="ml-4 underline">Retry</button><Link className="ml-4 underline" href="/login">Sign in</Link></div> : null; }
 const creatorSections = ["dashboard", "analytics", "drafts", "opportunities", "proposals", "bookings", "calendar", "services", "packages", "portfolio", "locations", "messages", "deliveries", "reviews", "verification", "appeals", "payments", "support", "settings"];
 const customerSections = ["dashboard", "drafts", "bookings", "requirements", "proposals", "messages", "saved", "deliveries", "payments", "disputes", "profile", "support"];
+function SignInPrompt({ role }: { role: string }) {
+  const pathname = usePathname();
+  return <div className="wrap section"><div className="mx-auto max-w-md rounded-2xl border border-stone-200 bg-white p-8 text-center"><p className="eyebrow">MEMOORIA WORKSPACE</p><h1 className="display text-3xl">Please sign in to continue.</h1><p className="muted mt-2">Log in to view your {role} dashboard, bookings and messages.</p><Link className="btn mt-6 inline-flex" href={`/login?returnTo=${encodeURIComponent(pathname)}`}>Login to continue</Link></div></div>;
+}
 export default function Workspace({ role, section, id }: { role: "customer" | "creator"; section: string; id?: string }) {
+  const [status, setStatus] = useState<"checking" | "ok" | "guest">("checking");
+  useEffect(() => {
+    let active = true;
+    api("/auth/me").then(() => { if (active) setStatus("ok"); }).catch(() => { if (active) setStatus("guest"); });
+    return () => { active = false; };
+  }, []);
+  if (status === "checking") return <Loader label="Checking your session…" />;
+  if (status === "guest") return <SignInPrompt role={role} />;
   return <div className="wrap section grid items-start gap-8 lg:grid-cols-[200px_1fr]"><aside className="rounded-xl border border-stone-200 bg-white p-5"><p className="eyebrow">YOUR {role.toUpperCase()} SPACE</p><nav className="flex gap-2 overflow-x-auto lg:flex-col">{(role === "creator" ? creatorSections : customerSections).map(s => <Link className={`whitespace-nowrap rounded px-3 py-2 text-sm capitalize ${section === s ? "bg-purple-50 text-brand font-semibold" : "muted"}`} href={`/${role}/${s}`} key={s}>{s}</Link>)}</nav><Link className="mt-5 block text-xs underline text-brand" href={role === "creator" ? "/customer/dashboard" : "/creator/dashboard"}>Switch workspace</Link></aside><main className="min-w-0"><p className="eyebrow">MEMOORIA WORKSPACE</p><h1 className="display text-4xl capitalize">{section === "dashboard" ? "Your next chapter." : section}</h1>
     {id && ["bookings", "projects"].includes(section) ? <BookingDetail id={id} role={role} /> : id && ["requirements", "opportunities"].includes(section) ? <RequirementDetail id={id} role={role} /> : section === "messages" ? <Messages /> : role === "creator" && ["calendar", "services", "packages", "portfolio", "locations", "verification", "settings"].includes(section) ? <CreatorSettings section={section} /> : ["dashboard", "analytics"].includes(section) ? <Overview role={role} /> : section === "drafts" ? <Drafts role={role} /> : section === "saved" ? <Saved /> : ["appeals", "disputes"].includes(section) ? <Cases kind={section as "appeals" | "disputes"} /> : section === "payments" ? <Payments /> : section === "profile" ? <Profile /> : section === "support" ? <Support /> : section === "reviews" ? <p className="muted">Reviews from completed bookings appear on your public creator profile. Reviews are moderated by Memooria.</p> : <Collection section={section} role={role} />}
   </main></div>;
